@@ -1,0 +1,86 @@
+/* MAP POUR APPRENDRE */
+/*
+	- un commentaire commence par /* et finis par */ attention a ne pas les coller au mots sinon le jeu ne verra pas le début ou la fin du commentaire
+	
+	- les principales fonctions (<PLAYER_SETUP>, <LAND_GENERATION>, etc..) sont appelées dans cet ordre
+	
+	- pour tester la map pas besoin de lancer une game, go dans -> un joueur -> éditeur -> créer un scénario. 
+	Dans l'onglet carte (en haut à droite), cocher "carte aléatoire", sélectionner la taille (juste à coter) et sélectionner "l'emplacement de la carte aléatoire" tu trouve le nom de ta carte (probablement en base de la liste).
+	il suffit de générer la carte à nouveau apres avoir sauvegardé une modification du fichier rms. (parfois il y a des bugs des résidus d'eau etc.. quitte et reviens)
+	Normal qu'on ne voit pas les joueurs !! c'est juste pour voir la map
+	
+	-lien utile https://docs.google.com/document/d/1jnhZXoeL9mkRUJxcGlKnO98fIwFKStP_OBozpr0CHXo/edit)
+
+	-lien si tu code avec notepad https://steamcommunity.com/sharedfiles/filedetails/?id=439948511 colore la syntaxe (permet de voir en direct si on écrit juste) sinon bloc note est largement suffisant
+*/
+
+<PLAYER_SETUP> /* détermine les placement et les ressources, pv, etc.. des joueurs (on peut donner plus de pv a une unité en particulier ou plus de dégats) */
+/* random_placement  place les joueurs aléatoirement proportionellement distants les uns des autres */
+grouped_by_team /* place les joueurs comme "random_placement" mais par équipe" */
+
+
+<LAND_GENERATION> 		/* place les principales zones (zone de départ pour les joueurs, forêts, lacs, etc..) sur la map */
+base_terrain GRASS 		/* type de terrain pour la map en général, autres options "GRASS, WATER, BEACH, DIRT, FOREST, DESERT, JUNGLE (essayer d'ajouter un numero par ex. DIRT2)" */
+create_land
+{
+	terrain_type DIRT	/* type de terrain pour la zone voir -> "base_terrain" */
+	land_percent 10	/* pourcentage utilisé de la map par la zone déclarée */
+	
+	top_border 10		/***** ditance min avec les bords de la map *****/
+	bottom_border 10	/*			top			 right					*/
+	right_border 10		/*					<>							*/
+	left_border 10		/*			left		 bottom					*/
+	
+	other_zone_avoidance_distance 15 /* évite les autres zones comme celles de départ des joueurs */
+}
+create_player_lands 	/* crée un bout de map équivalent pour chaque départ de chaque joueur */
+{
+	terrain_type WATER /* type de terrain pour la zone voir -> "base_terrain" */
+	land_percent 100		/* pourcentage utilisé de la map par toutes les zones de départ cumulées */
+	
+	top_border 5		/******ditance min avec les bords de la map******/
+	bottom_border 5		/*			top			 right					*/
+	right_border 5		/*					<>							*/
+	left_border 5		/*			left		 bottom					*/
+	
+	other_zone_avoidance_distance 10 /* espace entre les zones des joueurs */
+}
+
+<ELEVATION_GENERATION> 	/* (optionel) gère l'élevation du terrain pour avoir des zones plus hautes ou plus basses (le terrain élevé est composé d'un plateau à la hauteur désirée et de pentes allant aux hauteurs adjacentes) */
+create_elevation 2 		/* taille (1-7) (par défaul: 0 - plat) */
+{
+	base_terrain DIRT2 	/* terrain sur lequel on veut aplliquer l'élevation */
+	number_of_tiles 1250/* nombre de tiles max qu'on veut élever (tiles = tuiles ou morceau de terrain) (un chiffre < 10 à tendance a ne pas faire de bosses, ~1000 génère une map naturelle, ~10000 génère des carrés parfaits) */
+	number_of_clumps 2	/* nombre maximum d' élevations séparées (si on a un grand nombre dans une petites zones elles vont former une unique élevation) */
+	set_scale_by_groups /* permet de scale les élevations par rapport a la taille de la map */
+	spacing 8			/* espace minimum pour chaque élevation (escalier au lieu d'une pente) */
+}
+
+/*
+<CLIFF_GENERATION> /* (optionel) permet de générer des falaises (des murs naturels !chiants! */
+*/
+
+
+<TERRAIN_GENERATION> /*(optionel) permet de générer des zones de terrain variantes dans un terrain déjà défini*/
+create_terrain DIRT2
+{
+	base_terrain WATER
+	land_percent 20
+	number_of_clumps 10
+	set_scale_by_groups
+}
+
+/*
+<CONNECTION_GENERATION> /* (optionel) permet de générer des variantes de tarrains entre des zones existantes (générer des routes ou des ponts) */
+create_connect_all_players_land
+{
+	replace_terrain WATER SHALLOW
+	terrain_size WATER 5 0
+	terrain_cost WATER 3
+	terrain_cost MED_WATER 10
+	terrain_cost DESERT 15
+}
+*/
+/*
+<OBJECTS_GENERATION>
+*/
